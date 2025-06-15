@@ -1,32 +1,37 @@
 #!/usr/bin/python3
 """
-Function to determine the fewest number of coins needed to meet a given total
-Optimized to pass runtime constraints
+Function to determine the fewest number of coins needed to meet a given total.
+Uses a BFS approach for runtime efficiency in large cases.
 """
+
+from collections import deque
 
 
 def makeChange(coins, total):
     """
-    Determines the minimum number of coins needed to meet a given amount total
+    Returns the fewest number of coins needed to meet total
     Args:
         coins (list): list of coin denominations (positive integers)
-        total (int): the total amount
+        total (int): target amount
     Returns:
-        int: the fewest number of coins needed, or -1 if not possible
+        int: fewest number of coins needed, or -1 if not possible
     """
     if total <= 0:
         return 0
     if not coins:
         return -1
 
-    # Remove duplicates and sort once
-    coins = sorted(set(coins))
-    dp = [float('inf')] * (total + 1)
-    dp[0] = 0
+    visited = set()
+    queue = deque([(0, 0)])  # (current_sum, coin_count)
 
-    for coin in coins:
-        for i in range(coin, total + 1):
-            if dp[i - coin] != float('inf'):
-                dp[i] = min(dp[i], dp[i - coin] + 1)
+    while queue:
+        current_sum, coin_count = queue.popleft()
+        for coin in coins:
+            next_sum = current_sum + coin
+            if next_sum == total:
+                return coin_count + 1
+            if next_sum < total and next_sum not in visited:
+                visited.add(next_sum)
+                queue.append((next_sum, coin_count + 1))
 
-    return dp[total] if dp[total] != float('inf') else -1
+    return -1
