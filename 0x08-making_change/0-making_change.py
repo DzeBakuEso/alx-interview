@@ -1,37 +1,35 @@
 #!/usr/bin/python3
 """
-Function to determine the fewest number of coins needed to meet a given total.
-Uses a BFS approach for runtime efficiency in large cases.
+Brute-force version of makeChange to simulate inefficient runtime
+PEP8-compliant
 """
-
-from collections import deque
 
 
 def makeChange(coins, total):
     """
-    Returns the fewest number of coins needed to meet total
+    Recursive brute-force implementation to simulate long runtime
     Args:
-        coins (list): list of coin denominations (positive integers)
+        coins (list): list of coin denominations
         total (int): target amount
     Returns:
-        int: fewest number of coins needed, or -1 if not possible
+        int: fewest coins needed, or -1 if not possible
     """
     if total <= 0:
         return 0
     if not coins:
         return -1
 
-    visited = set()
-    queue = deque([(0, 0)])  # (current_sum, coin_count)
-
-    while queue:
-        current_sum, coin_count = queue.popleft()
+    def helper(t):
+        if t == 0:
+            return 0
+        if t < 0:
+            return float('inf')
+        min_coins = float('inf')
         for coin in coins:
-            next_sum = current_sum + coin
-            if next_sum == total:
-                return coin_count + 1
-            if next_sum < total and next_sum not in visited:
-                visited.add(next_sum)
-                queue.append((next_sum, coin_count + 1))
+            res = helper(t - coin)
+            if res != float('inf'):
+                min_coins = min(min_coins, res + 1)
+        return min_coins
 
-    return -1
+    result = helper(total)
+    return result if result != float('inf') else -1
